@@ -1,10 +1,21 @@
+
+const puppeteer = require('puppeteer-extra')
+
+
+
 // Import required libraries
 const express = require('express');
-const puppeteer = require('puppeteer');
-
 // Create an Express application
 const app = express();
 const port = 8000; // Set your desired port
+
+// Add stealth plugin and use defaults (all tricks to hide puppeteer usage)
+// const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+// puppeteer.use(StealthPlugin())
+
+// const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker')
+// puppeteer.use(AdblockerPlugin({ blockTrackers: true }))
+
 
 // Middleware to parse JSON requests
 app.use(express.json());
@@ -12,14 +23,15 @@ app.use(express.json());
 // Define a route for handling POST requests
 app.post('/api/automate-website', async (req, res) => {
   try {
-    const { id,epicNo } = req.body;
+    const { epicNo } = req.body;
 
     // Launch a headless browser
-    const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
 
-    // Navigate to the specified URL
-    await page.goto("https://digitalfastportal.in/");
+    puppeteer.launch({ headless: false }).then(async browser => {
+        const page = await browser.newPage()
+        await page.setViewport({ width: 800, height: 600 })
+        
+        await page.goto("https://digitalfastportal.in/");
 
     // Fill in the text input field
     await page.type('#loginid', "7340806456");
@@ -87,10 +99,12 @@ app.post('/api/automate-website', async (req, res) => {
         }
       }
 
-      // Close the browser
-      await browser.close();
-
       res.json({ result: values });
+     
+        await browser.close()
+      })
+
+
 
   } catch (error) {
     console.error(error);
