@@ -27,7 +27,7 @@ app.post('/api/automate-website', async (req, res) => {
 
     // Launch a headless browser
 
-    puppeteer.launch({ headless: false }).then(async browser => {
+    puppeteer.launch({ headless: true }).then(async browser => {
         const page = await browser.newPage()
         await page.setViewport({ width: 800, height: 600 })
         
